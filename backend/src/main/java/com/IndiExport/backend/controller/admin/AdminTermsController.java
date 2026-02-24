@@ -32,12 +32,15 @@ public class AdminTermsController {
         return ResponseEntity.ok(termsService.createNewVersion(user.getId(), request));
     }
 
-    @PutMapping("/versions/{termsId}/publish")
+    @PutMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<TermsResponse> publishVersion(@PathVariable UUID termsId) {
-        return ResponseEntity.ok(termsService.publishVersion(termsId));
+    public ResponseEntity<TermsResponse> publishTerms(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody @Valid UpdateTermsRequest request) {
+        User user = getUser(userDetails);
+        return ResponseEntity.ok(termsService.createNewVersion(user.getId(), request));
     }
-    
+
     // Add endpoint to list versions if needed, skipping for MVP strictness unless requested.
 
     private User getUser(UserDetails userDetails) {

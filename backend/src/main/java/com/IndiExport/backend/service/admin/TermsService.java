@@ -1,5 +1,6 @@
 package com.IndiExport.backend.service.admin;
 
+import com.IndiExport.backend.dto.admin.TermsAdminViewResponse;
 import com.IndiExport.backend.dto.admin.TermsResponse;
 import com.IndiExport.backend.dto.admin.UpdateTermsRequest;
 import com.IndiExport.backend.entity.TermsVersion;
@@ -25,6 +26,23 @@ public class TermsService {
                 .orElseThrow(() -> new AdminExceptions.TermsNotFoundException("No published terms found"));
     }
 
+    @Transactional(readOnly = true)
+    public TermsAdminViewResponse getAdminView() {
+        TermsResponse active = null;
+        try {
+            active = getLatestPublishedTerms();
+        } catch (AdminExceptions.TermsNotFoundException e) {
+            // Ignore for admin view if none published yet
+        }
+
+        return TermsAdminViewResponse.builder()
+                .activeVersion(active)
+                .history(termsRepository.findAllByOrderByVersionNumberDesc().stream()
+                        .map(this::mapToResponse)
+                        .collect(java.util.stream.Collectors.toList()))
+                .build();
+    }
+
     @Transactional
     public TermsResponse createNewVersion(UUID adminId, UpdateTermsRequest request) {
         // Get latest version number
@@ -34,8 +52,8 @@ public class TermsService {
 
         TermsVersion terms = TermsVersion.builder()
                 .versionNumber(nextVersion)
-                .title(request.getTitle())
-                .content(request.getContent())
+                .title(request.getVersionLabel())
+                .content(request.getMarkdown())
                 .createdByAdminId(adminId)
                 .isPublished(request.isPublishNow())
                 .publishedAt(request.isPublishNow() ? Instant.now() : null)
@@ -64,7 +82,7 @@ public class TermsService {
                 .id(terms.getId())
                 .versionNumber(terms.getVersionNumber())
                 .title(terms.getTitle())
-                .content(terms.getContent())
+                .markdown(terms.getContent())
                 .isPublished(terms.isPublished())
                 .publishedAt(terms.getPublishedAt())
                 .createdAt(terms.getCreatedAt())

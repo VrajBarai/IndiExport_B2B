@@ -2,6 +2,7 @@ package com.IndiExport.backend.controller.common;
 
 import com.IndiExport.backend.dto.admin.AcceptTermsRequest;
 import com.IndiExport.backend.dto.admin.AcceptanceResponse;
+import com.IndiExport.backend.dto.admin.TermsAdminViewResponse;
 import com.IndiExport.backend.dto.admin.TermsResponse;
 import com.IndiExport.backend.entity.User;
 import com.IndiExport.backend.repository.UserRepository;
@@ -24,6 +25,11 @@ public class TermsController {
     private final TermsService termsService;
     private final TermsAcceptanceService acceptanceService;
     private final UserRepository userRepository;
+
+    @GetMapping
+    public ResponseEntity<TermsAdminViewResponse> getTermsView() {
+        return ResponseEntity.ok(termsService.getAdminView());
+    }
 
     @GetMapping("/latest")
     public ResponseEntity<TermsResponse> getLatestTerms() {

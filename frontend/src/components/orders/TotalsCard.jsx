@@ -7,10 +7,11 @@ const TotalsCard = ({ totals, currencySnapshot }) => {
 
     // Helper to get correct value based on currency
     const getValue = (inrKey, convertedKey) => {
+        if (!totals) return '₹0.00';
         if (isInternational && totals[convertedKey]) {
             return formatMoney(totals[convertedKey], currency);
         }
-        return formatMoney(totals[inrKey], 'INR');
+        return formatMoney(totals[inrKey] || 0, 'INR');
     };
 
     return (

@@ -179,6 +179,36 @@ public class AnalyticsRepository {
                 Timestamp.from(from), Timestamp.from(to)
         );
 
+        // Orders Trend
+        String orderTrendSql = """
+            SELECT TO_CHAR(created_at, 'YYYY-MM-DD') as date, COUNT(*) as count
+            FROM orders
+            WHERE created_at BETWEEN ? AND ? AND status != 'CANCELLED'
+            GROUP BY date
+            ORDER BY date ASC
+        """;
+        List<ChartPointResponse> ordersOverTime = jdbcTemplate.query(orderTrendSql, (rs, rowNum) -> ChartPointResponse.builder()
+                .period(rs.getString("date"))
+                .value(rs.getLong("count"))
+                .build(),
+                Timestamp.from(from), Timestamp.from(to)
+        );
+
+        // Disputes Trend
+        String disputeTrendSql = """
+            SELECT TO_CHAR(created_at, 'YYYY-MM-DD') as date, COUNT(*) as count
+            FROM disputes
+            WHERE created_at BETWEEN ? AND ?
+            GROUP BY date
+            ORDER BY date ASC
+        """;
+        List<ChartPointResponse> disputesOverTime = jdbcTemplate.query(disputeTrendSql, (rs, rowNum) -> ChartPointResponse.builder()
+                .period(rs.getString("date"))
+                .value(rs.getLong("count"))
+                .build(),
+                Timestamp.from(from), Timestamp.from(to)
+        );
+
         long gmv = ((Number) orderStats.get("gmv")).longValue();
         return AdminDashboardAnalyticsResponse.builder()
                 .platformOrdersCount(((Number) orderStats.get("total_orders")).longValue())
@@ -187,7 +217,9 @@ public class AnalyticsRepository {
                 .disputesOpenCount(disputesOpen != null ? disputesOpen : 0)
                 .newSellersCount(((Number) userStats.get("new_sellers")).longValue())
                 .newBuyersCount(((Number) userStats.get("new_buyers")).longValue())
-                .topCountriesByOrders(topCountries)
+                .ordersOverTime(ordersOverTime)
+                .disputesOverTime(disputesOverTime)
+                .topCountries(topCountries)
                 .build();
     }
 

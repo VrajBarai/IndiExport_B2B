@@ -71,7 +71,7 @@ const AdminDisputesPage = () => {
             <div className="container mx-auto px-4 max-w-7xl py-8">
                 {/* Filters */}
                 <div className="flex flex-wrap gap-2 mb-6">
-                    {['ALL', 'RAISED', 'UNDER_REVIEW', 'RESOLVED', 'REJECTED'].map(status => (
+                    {['ALL', 'OPEN', 'UNDER_REVIEW', 'RESOLVED', 'REJECTED'].map(status => (
                         <button
                             key={status}
                             onClick={() => handleStatusChange(status)}
@@ -80,7 +80,7 @@ const AdminDisputesPage = () => {
                                 : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
                                 }`}
                         >
-                            {status.replace('_', ' ')}
+                            {status === 'OPEN' ? 'RAISED' : status.replace('_', ' ')}
                         </button>
                     ))}
                 </div>

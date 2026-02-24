@@ -1,11 +1,15 @@
 package com.IndiExport.backend.dto.admin;
 
 import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateAdminSettingsRequest {
 
     @Min(value = 0, message = "Price cannot be negative")

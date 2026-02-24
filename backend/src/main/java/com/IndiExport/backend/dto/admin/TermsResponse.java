@@ -12,7 +12,7 @@ public class TermsResponse {
     private UUID id;
     private int versionNumber;
     private String title;
-    private String content;
+    private String markdown;
     private boolean isPublished;
     private Instant publishedAt;
     private Instant createdAt;

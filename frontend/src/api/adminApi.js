@@ -20,8 +20,29 @@ const adminApi = {
     getTerms: () => {
         return axiosClient.get('/terms');
     },
+    getTermsHistory: () => {
+        // This is shared by getTerms root in our simplified implementation
+        return axiosClient.get('/terms');
+    },
     acceptTerms: (versionId) => {
         return axiosClient.post('/terms/accept', { versionId });
+    },
+
+    // User Management (Admin)
+    adminGetUsers: (params) => {
+        return axiosClient.get('/admin/users', { params });
+    },
+    toggleUserStatus: (userId) => {
+        return axiosClient.post(`/admin/users/${userId}/toggle-status`);
+    },
+
+    // Product Audit (Admin)
+    adminGetProducts: (params) => {
+        return axiosClient.get('/admin/products', { params });
+    },
+    updateProductStatus: (productId, data) => {
+        // data: { status: 'ACTIVE'|'INACTIVE'|'BLOCKED', reason: string }
+        return axiosClient.patch(`/admin/products/${productId}/status`, data);
     }
 };
 

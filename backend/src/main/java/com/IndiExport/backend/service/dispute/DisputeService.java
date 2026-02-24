@@ -218,7 +218,9 @@ public class DisputeService {
                 .resolutionAction(dispute.getResolutionAction())
                 .resolutionNotes(dispute.getResolutionNotes())
                 .partialRefundAmountMinor(dispute.getPartialRefundAmountMinor())
-                .evidence(dispute.getEvidence().stream().map(this::mapToEvidenceResponse).collect(Collectors.toList()))
+                .evidence(dispute.getEvidence() != null 
+                    ? dispute.getEvidence().stream().map(this::mapToEvidenceResponse).collect(Collectors.toList())
+                    : List.of())
                 .build();
     }
     
@@ -244,7 +246,9 @@ public class DisputeService {
                 .resolutionAction(dispute.getResolutionAction())
                 .resolutionNotes(dispute.getResolutionNotes())
                 .partialRefundAmountMinor(dispute.getPartialRefundAmountMinor())
-                .evidence(dispute.getEvidence().stream().map(this::mapToEvidenceResponse).collect(Collectors.toList()))
+                .evidence(dispute.getEvidence() != null 
+                    ? dispute.getEvidence().stream().map(this::mapToEvidenceResponse).collect(Collectors.toList())
+                    : List.of())
                 .build();
     }
 

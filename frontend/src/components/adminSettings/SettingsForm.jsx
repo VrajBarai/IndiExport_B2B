@@ -13,20 +13,24 @@ const SettingsForm = ({ initialData, onSave, isSaving }) => {
     useEffect(() => {
         if (initialData) {
             reset({
-                advancedSellerPlanPriceINRPaise: initialData.advancedSellerPlanPriceINRPaise / 100, // Convert to Rupees for display
-                platformCommissionPercent: initialData.platformCommissionPercent,
-                disputeWindowDays: initialData.disputeWindowDays,
-                autoReleaseDays: initialData.autoReleaseDays
+                advancedSellerPlanPriceInrPaise: (initialData.advancedSellerPlanPriceInrPaise || 0) / 100,
+                platformCommissionPercent: (initialData.platformCommissionBps || 0) / 100,
+                disputeWindowDays: initialData.disputeWindowDays || 0,
+                autoReleaseDays: initialData.autoReleaseDays || 0
             });
         }
     }, [initialData, reset]);
 
     const onSubmit = (data) => {
-        // Convert back to paise for API
+        // Convert back to paise and bps for API
         const payload = {
             ...data,
-            advancedSellerPlanPriceINRPaise: Math.round(data.advancedSellerPlanPriceINRPaise * 100)
+            advancedSellerPlanPriceInrPaise: Math.round((data.advancedSellerPlanPriceInrPaise || 0) * 100),
+            platformCommissionBps: Math.round((data.platformCommissionPercent || 0) * 100)
         };
+        // Remove the percent field from payload as backend expects Bps
+        delete payload.platformCommissionPercent;
+
         onSave(payload);
     };
 
@@ -52,14 +56,14 @@ const SettingsForm = ({ initialData, onSave, isSaving }) => {
                             <input
                                 type="number"
                                 step="0.01"
-                                {...register('advancedSellerPlanPriceINRPaise', {
+                                {...register('advancedSellerPlanPriceInrPaise', {
                                     required: 'Price is required',
                                     min: { value: 0, message: 'Price cannot be negative' }
                                 })}
                                 className="w-full pl-8 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-brand-500 focus:border-brand-500"
                             />
                         </div>
-                        {errors.advancedSellerPlanPriceINRPaise && <p className="text-red-500 text-xs mt-1">{errors.advancedSellerPlanPriceINRPaise.message}</p>}
+                        {errors.advancedSellerPlanPriceInrPaise && <p className="text-red-500 text-xs mt-1">{errors.advancedSellerPlanPriceInrPaise.message}</p>}
                     </div>
 
                     <div>

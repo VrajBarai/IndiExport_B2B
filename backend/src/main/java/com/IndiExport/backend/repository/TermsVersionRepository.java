@@ -17,5 +17,7 @@ public interface TermsVersionRepository extends JpaRepository<TermsVersion, UUID
     @Query("SELECT t FROM TermsVersion t ORDER BY t.versionNumber DESC LIMIT 1")
     Optional<TermsVersion> findLatestAny();
 
+    java.util.List<com.IndiExport.backend.entity.TermsVersion> findAllByOrderByVersionNumberDesc();
+
     boolean existsByVersionNumber(int versionNumber);
 }

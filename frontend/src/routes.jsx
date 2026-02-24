@@ -52,6 +52,8 @@ import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import AdminTermsEditorPage from './pages/admin/AdminTermsEditorPage';
 import AdminSellerVerificationPage from './pages/admin/AdminSellerVerificationPage';
 import AdminSellerDetailsPage from './pages/admin/AdminSellerDetailsPage';
+import AdminUsersPage from './pages/admin/AdminUsersPage';
+import AdminProductsPage from './pages/admin/AdminProductsPage';
 
 // Common Pages
 import NotFoundPage from './pages/common/NotFoundPage';
@@ -60,8 +62,6 @@ import AccessDeniedPage from './pages/common/AccessDeniedPage';
 // Placeholder/Missing Pages (User mentioned these in architecture but they might not exist yet)
 const SellerUpgradePage = () => <div className="p-8"><h1 className="text-2xl font-bold">Upgrade Your Plan</h1><p className="mt-4 text-slate-500">Coming soon.</p></div>;
 const SellerBillingPage = () => <div className="p-8"><h1 className="text-2xl font-bold">Billing & Invoices</h1><p className="mt-4 text-slate-500">Coming soon.</p></div>;
-const AdminUsersPage = () => <div className="p-8"><h1 className="text-2xl font-bold">Manage Users</h1><p className="mt-4 text-slate-500">Coming soon.</p></div>;
-const AdminProductsPage = () => <div className="p-8"><h1 className="text-2xl font-bold">Products Audit</h1><p className="mt-4 text-slate-500">Coming soon.</p></div>;
 const HomePage = () => <Navigate to="/products" replace />; // Default home to products for now
 
 // Protected Route components

@@ -17,5 +17,7 @@ public class AdminDashboardAnalyticsResponse {
     private Long disputesOpenCount;
     private Long newSellersCount;
     private Long newBuyersCount;
-    private List<CountrySalesResponse> topCountriesByOrders;
+    private List<ChartPointResponse> ordersOverTime;
+    private List<ChartPointResponse> disputesOverTime;
+    private List<CountrySalesResponse> topCountries;
 }
