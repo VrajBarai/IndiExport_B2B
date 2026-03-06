@@ -1,20 +1,24 @@
-# Use Java 17
-FROM eclipse-temurin:21-jdk-jammy
+# -------- Build Stage --------
+FROM maven:3.9.9-eclipse-temurin-21 AS builder
 
-# Set working directory
-WORKDIR /app
+WORKDIR /build
 
-# Copy backend code
-COPY backend/ .
+# Copy backend project
+COPY backend/pom.xml .
+COPY backend/.mvn .mvn
+COPY backend/mvnw .
+COPY backend/src src
 
-# Give permission to mvnw
 RUN chmod +x mvnw
-
-# Build project
 RUN ./mvnw clean package -DskipTests
 
-# Expose port
+# -------- Run Stage --------
+FROM eclipse-temurin:21-jdk-jammy
+
+WORKDIR /app
+
+COPY --from=builder /build/target/*.jar app.jar
+
 EXPOSE 8080
 
-# Run application
-CMD ["java", "-jar", "target/*.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
