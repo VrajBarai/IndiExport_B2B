@@ -93,24 +93,52 @@ public class SecurityConfig {
     /**
      * CORS Configuration for React frontend integration
      */
+    // @Bean
+    // public CorsConfigurationSource corsConfigurationSource() {
+    // CorsConfiguration config = new CorsConfiguration();
+    // config.setAllowedOrigins(Arrays.asList(
+    // "http://localhost:5173",// Vite dev server
+    // "http://localhost:5174",
+    // "http://localhost:3000", // Alternative React dev port
+    // "http://localhost:8080", // Local testing
+    // "https://*.vercel.app"
+    // // Add production URL when deployed
+    // ));
+    // config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE",
+    // "OPTIONS", "PATCH"));
+    // config.setAllowedHeaders(Collections.singletonList("*"));
+    // config.setAllowCredentials(true);
+    // config.setMaxAge(3600L); // 1 hour
+
+    // UrlBasedCorsConfigurationSource source = new
+    // UrlBasedCorsConfigurationSource();
+    // source.registerCorsConfiguration("/**", config);
+    // return source;
+    // }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList(
-                "http://localhost:5173",// Vite dev server
+
+        config.setAllowedOriginPatterns(Arrays.asList(
+                "http://localhost:5173",
                 "http://localhost:5174",
-                "http://localhost:3000", // Alternative React dev port
-                "http://localhost:8080", // Local testing
-                "https://*.vercel.app"
-        // Add production URL when deployed
-        ));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        config.setAllowedHeaders(Collections.singletonList("*"));
+                "http://localhost:3000",
+                "https://*.vercel.app"));
+
+        config.setAllowedMethods(Arrays.asList(
+                "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+
+        config.setAllowedHeaders(Arrays.asList("*"));
+
         config.setAllowCredentials(true);
-        config.setMaxAge(3600L); // 1 hour
+
+        config.addExposedHeader("Authorization"); // ⭐ important for JWT
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/api/**", config); // ⭐ change from /**
+
         return source;
     }
 
