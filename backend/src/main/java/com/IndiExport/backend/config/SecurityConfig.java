@@ -100,7 +100,8 @@ public class SecurityConfig {
                 "http://localhost:5173",// Vite dev server
                 "http://localhost:5174",
                 "http://localhost:3000", // Alternative React dev port
-                "http://localhost:8081" // Local testing
+                "http://localhost:8080", // Local testing
+                "https://*.vercel.app"
         // Add production URL when deployed
         ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
