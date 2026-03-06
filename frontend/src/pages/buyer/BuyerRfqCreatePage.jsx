@@ -1,24 +1,18 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Package, Globe, Anchor, DollarSign, Upload, Check, Loader2, X, Image as ImageIcon } from 'lucide-react';
 import rfqApi from '../../api/rfqApi';
+import profileApi from '../../api/profileApi';
 import { uploadFile } from '../../api/uploadApi';
 import toast from 'react-hot-toast';
+import useAuthStore from '../../store/authStore';
 
-const INCOTERMS = ['EXW', 'FCA', 'CPT', 'CIP', 'DAP', 'DPU', 'DDP', 'FAS', 'FOB', 'CFR', 'CIF'];
-// Must match backend ShippingMode enum: AIR, SEA, ROAD, COURIER
-const SHIPPING_MODES = [
-    { value: 'SEA', label: 'Sea Freight' },
-    { value: 'AIR', label: 'Air Freight' },
-    { value: 'ROAD', label: 'Road / Land' },
-    { value: 'COURIER', label: 'Courier / Express' },
-];
 const UNITS = ['PCS', 'KG', 'TON', 'MT', 'LTR', 'CBM', 'BOX', 'ROLL'];
 
 const STEPS = [
     { id: 1, title: 'Product Details', icon: <Package size={18} /> },
-    { id: 2, title: 'Destination & Shipping', icon: <Globe size={18} /> },
+    { id: 2, title: 'Destination', icon: <Globe size={18} /> },
     { id: 3, title: 'Pricing & Timeline', icon: <DollarSign size={18} /> },
 ];
 
@@ -28,17 +22,33 @@ const selectCls = `${inputCls} appearance-none cursor-pointer`;
 
 export default function BuyerRfqCreatePage() {
     const navigate = useNavigate();
+    const { user } = useAuthStore();
     const [step, setStep] = useState(1);
     const [submitting, setSubmitting] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [mediaFiles, setMediaFiles] = useState([]); // { file, previewUrl, uploadedUrl }
     const fileInputRef = useRef();
+
     const [form, setForm] = useState({
         title: '', details: '', quantity: '', unit: 'PCS',
-        destinationCountry: '', shippingMode: 'SEA', incoterm: 'FOB',
+        destinationCountry: '',
         targetPriceMinor: '', targetCurrency: 'USD', mediaUrls: [],
     });
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const res = await profileApi.getBuyerProfile();
+                if (res.data?.country) {
+                    setForm(f => ({ ...f, destinationCountry: res.data.country }));
+                }
+            } catch (err) {
+                console.error("Failed to fetch buyer profile for country default", err);
+            }
+        };
+        fetchProfile();
+    }, []);
 
     const set = (field) => (e) => setForm(f => ({ ...f, [field]: e.target.value }));
 
@@ -87,7 +97,7 @@ export default function BuyerRfqCreatePage() {
     };
 
     const handleSubmit = async () => {
-        if (!form.title || !form.quantity || !form.destinationCountry || !form.incoterm) {
+        if (!form.title || !form.quantity || !form.destinationCountry) {
             toast.error('Please fill all required fields');
             return;
         }
@@ -178,26 +188,19 @@ export default function BuyerRfqCreatePage() {
                     {step === 2 && (
                         <>
                             <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                                <Globe size={20} className="text-brand-600" /> Destination & Shipping
+                                <Globe size={20} className="text-brand-600" /> Destination
                             </h2>
                             <div>
                                 <label className={labelCls}>Destination Country <span className="text-red-500">*</span></label>
-                                <input className={inputCls} value={form.destinationCountry} onChange={set('destinationCountry')} placeholder="e.g. US, DE, GB" maxLength={2} />
-                                <p className="text-xs text-slate-400 mt-1">ISO 2-letter country code</p>
-                            </div>
-                            <div>
-                                <label className={labelCls}>Shipping Mode</label>
-                                <select className={selectCls} value={form.shippingMode} onChange={set('shippingMode')}>
-                                    {SHIPPING_MODES.map(m => (
-                                        <option key={m.value} value={m.value}>{m.label}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className={labelCls}>Incoterm <span className="text-red-500">*</span></label>
-                                <select className={selectCls} value={form.incoterm} onChange={set('incoterm')}>
-                                    {INCOTERMS.map(t => <option key={t}>{t}</option>)}
-                                </select>
+                                <input
+                                    className={`${inputCls} bg-slate-100 text-slate-500 cursor-not-allowed`}
+                                    value={form.destinationCountry}
+                                    readOnly
+                                    disabled
+                                    placeholder="e.g. US, DE, GB"
+                                    maxLength={2}
+                                />
+                                <p className="text-xs text-slate-400 mt-1">Sourced automatically from your profile</p>
                             </div>
                         </>
                     )}
@@ -268,8 +271,8 @@ export default function BuyerRfqCreatePage() {
                                 <div
                                     onClick={() => !uploading && fileInputRef.current?.click()}
                                     className={`border-2 border-dashed rounded-xl p-5 text-center transition-colors ${uploading
-                                            ? 'border-brand-300 bg-brand-50 cursor-wait'
-                                            : 'border-slate-300 hover:bg-slate-50 cursor-pointer'
+                                        ? 'border-brand-300 bg-brand-50 cursor-wait'
+                                        : 'border-slate-300 hover:bg-slate-50 cursor-pointer'
                                         }`}
                                 >
                                     {uploading ? (
